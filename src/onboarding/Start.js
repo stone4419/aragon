@@ -11,6 +11,8 @@ import {
   IconCross,
   DropDown,
   IconAttention,
+  breakpoint,
+  BreakPoint,
 } from '@aragon/ui'
 import { animated } from 'react-spring'
 import { network, getDemoDao, web3Providers } from '../environment'
@@ -74,7 +76,13 @@ class Start extends React.Component {
     return (
       <Main style={{ opacity: screenTransitionStyles.opacity }}>
         <Content style={screenTransitionStyles}>
-          <StartContent
+          <BreakPoint to="medium">
+            <Warning>
+              If you want to <span>create</span> an organization, please use
+              your desktop browser.
+            </Warning>
+          </BreakPoint>
+          <ResponsiveStartContent
             onCreate={onCreate}
             hasWallet={web3Providers.wallet.status === 'connected'}
             hasAccount={hasAccount}
@@ -137,6 +145,7 @@ class StartContent extends React.PureComponent {
       domainCheckStatus,
       onDomainChange,
       onOpenOrganization,
+      responsiveLanding,
     } = this.props
 
     const canCreate =
@@ -151,14 +160,18 @@ class StartContent extends React.PureComponent {
       <React.Fragment>
         <Title>
           <Text size="great" weight="bold" color={theme.textDimmed}>
-            Welcome to Aragon
+            {responsiveLanding
+              ? 'Find an existing organization'
+              : 'Welcome to Aragon'}
           </Text>
         </Title>
 
         <NetworkChooser>
           <p>
             <Text size="large" color={theme.textSecondary}>
-              Start by choosing the network for your organization
+              {responsiveLanding
+                ? 'Choose network'
+                : 'Start by choosing the network for your organization'}
             </Text>
           </p>
 
@@ -167,10 +180,11 @@ class StartContent extends React.PureComponent {
               <DropDown
                 items={networkChooserItems.map(([id, label]) => label)}
                 onChange={this.handleNetworkChange}
+                wide={responsiveLanding}
               />
             </div>
 
-            {network.type === 'main' && (
+            {!responsiveLanding && network.type === 'main' && (
               <Disclosure>
                 <span>
                   <IconAttention />
@@ -191,40 +205,46 @@ class StartContent extends React.PureComponent {
         </NetworkChooser>
 
         <TwoActions>
-          <Action>
-            <p>
-              <Text size="large" color={theme.textSecondary}>
-                Then create a new organization
-              </Text>
-            </p>
-            <Button
-              mode="strong"
-              onClick={this.props.onCreate}
-              disabled={!canCreate}
-            >
-              Create a new organization
-            </Button>
-            {this.renderWarning()}
-          </Action>
+          {!responsiveLanding && (
+            <Action>
+              <p>
+                <Text size="large" color={theme.textSecondary}>
+                  Then create a new organization
+                </Text>
+              </p>
+              <Button
+                mode="strong"
+                onClick={this.props.onCreate}
+                disabled={!canCreate}
+              >
+                Create a new organization
+              </Button>
+              {this.renderWarning()}
+            </Action>
+          )}
           <form onSubmit={onOpenOrganization}>
             <Action>
               <p>
                 <Text size="large" color={theme.textSecondary}>
-                  Or open an existing organization
+                  {responsiveLanding
+                    ? 'Enter an organization’s name'
+                    : 'Or open an existing organization'}
                 </Text>
               </p>
 
               <OpenOrganization>
                 <Field>
-                  <TextInput
+                  <StyledTextInput
                     id="onboard-start-domain"
-                    style={{ textAlign: 'right' }}
                     onChange={onDomainChange}
                     value={domain}
+                    placeholder="Organization name"
                   />
-                  <label htmlFor="onboard-start-domain">
-                    <Text weight="bold"> .aragonid.eth</Text>
-                  </label>
+                  <div>
+                    <label htmlFor="onboard-start-domain">
+                      <Text weight="bold"> .aragonid.eth</Text>
+                    </label>
+                  </div>
                   <Status>
                     <CheckContainer
                       active={domainCheckStatus === DomainCheckAccepted}
@@ -248,21 +268,24 @@ class StartContent extends React.PureComponent {
                   </Status>
                 </Field>
 
-                <span style={{ height: '40px' }}>
+                <SubmitWrap>
                   {domainCheckStatus === DomainCheckAccepted && (
-                    <Button mode="outline" compact onClick={onOpenOrganization}>
+                    <StyledSubmitButton
+                      mode={responsiveLanding ? 'strong' : 'outline'}
+                      compact={!responsiveLanding}
+                      onClick={onOpenOrganization}
+                    >
                       Open organization
-                    </Button>
+                    </StyledSubmitButton>
                   )}
                   {domainCheckStatus === DomainCheckRejected && (
-                    <Text
-                      size="xsmall"
-                      style={{ display: 'block', marginTop: '-10px' }}
+                    <DomainStatus
+                      size={responsiveLanding ? 'normal' : 'xsmall'}
                     >
                       No organization with that name exists.
-                    </Text>
+                    </DomainStatus>
                   )}
-                </span>
+                </SubmitWrap>
               </OpenOrganization>
             </Action>
           </form>
@@ -351,13 +374,77 @@ class StartContent extends React.PureComponent {
   }
 }
 
+const ResponsiveStartContent = props => (
+  <React.Fragment>
+    <BreakPoint to="medium">
+      <StartContent {...props} responsiveLanding />
+    </BreakPoint>
+    <BreakPoint from="medium">
+      <StartContent {...props} />
+    </BreakPoint>
+  </React.Fragment>
+)
+
+const DomainStatus = styled(Text)`
+  display: block;
+  margin: -10px 0 0 5px;
+`
+
+const SubmitWrap = styled.span`
+  height: 40px;
+  display: flex;
+
+  ${breakpoint(
+    'medium',
+    `
+      display: inline;
+      text-align: unset;
+    `
+  )}
+`
+
+const StyledSubmitButton = styled(Button)`
+  margin-left: auto;
+
+  ${breakpoint(
+    'medium',
+    `
+      margin-left: unset;
+    `
+  )}
+`
+
+const Warning = styled.div`
+  background: rgba(255, 195, 70, 0.09);
+  border-radius: 3px;
+  padding: 13px;
+  margin-bottom: 45px;
+  font-size: 15px;
+
+  & span {
+    font-weight: bold;
+  }
+`
+
 const Main = styled(animated.div)`
   display: flex;
   align-items: center;
   justify-content: flex-start;
   width: 100%;
   height: 100%;
-  padding: 100px;
+  padding: 24px;
+  background: url(${logo}) no-repeat top center;
+  background-size: calc(100vw - 32px);
+  background-position: 50% 16.666666vh;
+
+  ${breakpoint(
+    'medium',
+    `
+      padding: 100px;
+      background: none;
+    `
+  )}
+
   @media (min-width: 1180px) {
     justify-content: flex-start;
     background: url(${logo}) no-repeat calc(100% - 70px) 60%;
@@ -365,29 +452,62 @@ const Main = styled(animated.div)`
 `
 
 const Content = styled(animated.div)`
+  height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: flex-start;
+
+  ${breakpoint(
+    'medium',
+    `
+      justify-content: center;
+    `
+  )}
 `
 
 const TwoActions = styled.div`
-  display: flex;
-  align-items: flex-start;
-  > *:first-child {
-    width: 400px;
-  }
+  width: 100%;
+
+  ${breakpoint(
+    'medium',
+    `
+      display: flex;
+      align-items: flex-start;
+      > *:first-child {
+        width: 400px;
+      }
+    `
+  )}
 `
 
 const NetworkChooser = styled.div`
-  margin-bottom: 60px;
+  width: 100%;
+  margin-bottom: 45px;
   > p:first-child {
-    margin-bottom: 40px;
+    margin-bottom: 20px;
   }
+
+  ${breakpoint(
+    'medium',
+    `
+      margin-bottom: 60px;
+      > p:first-child {
+        margin-bottom: 40px;
+      }
+    `
+  )}
 `
 
 const NetworkChooserContainer = styled.div`
-  display: flex;
+  display: block;
+
+  ${breakpoint(
+    'medium',
+    `
+      display: flex;
+    `
+  )}
 `
 
 const StrongSafeLink = styled(SafeLink)`
@@ -430,21 +550,63 @@ const ActionInfo = styled.span`
 
 const Title = styled.h1`
   font-size: 37px;
-  margin-bottom: 40px;
+  margin-bottom: 45px;
+
+  ${breakpoint(
+    'medium',
+    `
+      margin-bottom: 40px;
+    `
+  )}
 `
 
 const OpenOrganization = styled.div`
-  display: flex;
-  flex-direction: column;
+  width: 100%;
+
+  ${breakpoint(
+    'medium',
+    `
+      display: flex;
+      flex-direction: column;
+    `
+  )}
+`
+
+const StyledTextInput = styled(TextInput)`
+  width: 100%;
+  grid-column: 1 / -1;
+
+  ${breakpoint(
+    'medium',
+    `
+      text-align: right;
+    `
+  )}
 `
 
 const Field = styled.div`
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  grid-template-columns: auto 1fr;
+  row-gap: 10px;
   margin-bottom: 20px;
+
   label {
-    margin: 0 10px;
+    display: block;
+    margin-left: 8px;
   }
+
+  ${breakpoint(
+    'medium',
+    `
+      display: flex;
+      align-items: center;
+
+      label {
+        margin: 0 10px;
+      }
+    `
+  )}
 `
 
 const Status = styled.span`
