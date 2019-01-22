@@ -1,13 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {
-  Button,
-  Table,
-  TableCell,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@aragon/ui'
+import { Button, Table, TableRow, Text } from '@aragon/ui'
+import { TableHeader, TableCell, FirstTableCell, LastTableCell } from './Table'
 import Section from './Section'
 import EmptyBlock from './EmptyBlock'
 import AppInstanceLabel from './AppInstanceLabel'
@@ -88,13 +82,13 @@ class Row extends React.Component {
     const { action, app, proxyAddress } = this.props
     return (
       <TableRow>
-        <TableCell>
+        <FirstTableCell>
           <Text weight="bold">{action}</Text>
-        </TableCell>
+        </FirstTableCell>
         <TableCell>
           <AppInstanceLabel app={app} proxyAddress={proxyAddress} />
         </TableCell>
-        <TableCell align="right">
+        <LastTableCell align="right">
           <Button
             mode="outline"
             emphasis="negative"
@@ -103,7 +97,7 @@ class Row extends React.Component {
           >
             Revoke
           </Button>
-        </TableCell>
+        </LastTableCell>
       </TableRow>
     )
   }
