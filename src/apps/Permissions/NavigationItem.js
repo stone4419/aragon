@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import { Badge } from '@aragon/ui'
+import { Badge, BreakPoint } from '@aragon/ui'
 import IdentityBadge from '../../components/IdentityBadge'
 
 const NavigationItem = ({ title, badge, address, entity }) => {
@@ -9,12 +9,14 @@ const NavigationItem = ({ title, badge, address, entity }) => {
   return (
     <Main>
       <Title>{title}</Title>
-      {isEntity && (
-        <IdentityBadge
-          entity={entity && entity.type === 'any' ? 'Any account' : address}
-        />
-      )}
-      {badge && <Badge.App title={badge.title}>{badge.label}</Badge.App>}
+      <BreakPoint from="medium">
+        {isEntity && (
+          <IdentityBadge
+            entity={entity && entity.type === 'any' ? 'Any account' : address}
+          />
+        )}
+        {badge && <Badge.App title={badge.title}>{badge.label}</Badge.App>}
+      </BreakPoint>
     </Main>
   )
 }
