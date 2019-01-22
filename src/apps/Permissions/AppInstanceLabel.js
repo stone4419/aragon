@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import { Badge } from '@aragon/ui'
+import { Badge, BreakPoint, breakpoint } from '@aragon/ui'
 import { shortenAddress } from '../../web3-utils'
 import AppIcon from './AppIcon'
 
@@ -16,7 +16,9 @@ class AppInstanceLabel extends React.PureComponent {
     const { app, proxyAddress, showIcon = true } = this.props
     return (
       <Main>
-        {showIcon && <AppIconInRow app={app} />}
+        <BreakPoint from="medium">
+          {showIcon && <AppIconInRow app={app} />}
+        </BreakPoint>
         <AppName>{app ? app.name : 'Unknown'}</AppName>
         <Badge.App title={proxyAddress}>
           {(app && app.identifier) || shortenAddress(proxyAddress)}
@@ -27,8 +29,16 @@ class AppInstanceLabel extends React.PureComponent {
 }
 
 const Main = styled.div`
-  display: flex;
-  align-items: center;
+  margin: auto;
+
+  ${breakpoint(
+    'medium',
+    `
+      display: flex;
+      align-items: center;
+      text-align: left;
+    `
+  )}
 `
 
 const AppIconInRow = styled(AppIcon)`
