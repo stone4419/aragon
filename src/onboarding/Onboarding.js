@@ -640,8 +640,15 @@ const Screen = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  overflow: hidden;
+  overflow: auto;
   pointer-events: ${({ active }) => (active ? 'auto' : 'none')};
+
+  ${breakpoint(
+    'medium',
+    `
+      overflow: hidden;
+    `
+  )}
 `
 
 export default Onboarding

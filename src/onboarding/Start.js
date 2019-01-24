@@ -227,7 +227,7 @@ class StartContent extends React.PureComponent {
               <p>
                 <Text size="large" color={theme.textSecondary}>
                   {responsiveLanding
-                    ? 'Enter your organization name'
+                    ? 'Enter an organization’s name'
                     : 'Or open an existing organization'}
                 </Text>
               </p>
