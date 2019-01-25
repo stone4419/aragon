@@ -19,7 +19,13 @@ import { network, getDemoDao, web3Providers } from '../environment'
 import { sanitizeNetworkType } from '../network-config'
 import { noop } from '../utils'
 import providerString from '../provider-strings'
-import { fromWei, toWei, getUnknownBalance, formatBalance } from '../web3-utils'
+import {
+  fromWei,
+  toWei,
+  getUnknownBalance,
+  formatBalance,
+  isConnected,
+} from '../web3-utils'
 import LoadingRing from '../components/LoadingRing'
 import logo from './assets/logo-welcome.svg'
 
@@ -84,7 +90,7 @@ class Start extends React.Component {
           </BreakPoint>
           <ResponsiveStartContent
             onCreate={onCreate}
-            hasWallet={web3Providers.wallet.status === 'connected'}
+            hasWallet={isConnected(web3Providers.wallet)}
             hasAccount={hasAccount}
             walletNetwork={walletNetwork}
             walletProviderId={walletProviderId}
