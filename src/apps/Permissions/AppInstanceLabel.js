@@ -21,9 +21,9 @@ class AppInstanceLabel extends React.PureComponent {
           {showIcon && <AppIconInRow app={app} />}
         </BreakPoint>
         <AppName>{app ? app.name : 'Unknown'}</AppName>
-        <Badge.App title={proxyAddress}>
+        <StyledBadge title={proxyAddress}>
           {(app && app.identifier) || shortenAddress(proxyAddress)}
-        </Badge.App>
+        </StyledBadge>
       </Main>
     )
   }
@@ -38,6 +38,7 @@ const Main = styled.div`
       display: flex;
       align-items: center;
       text-align: left;
+      margin: unset;
     `
   )}
 `
@@ -48,8 +49,27 @@ const AppIconInRow = styled(AppIcon)`
   margin-top: -1px;
 `
 
+const StyledBadge = styled(Badge.App)`
+  display: inline-block;
+
+  ${breakpoint(
+    'medium',
+    `
+      display: inline;
+    `
+  )}
+`
+
 const AppName = styled.span`
-  margin-right: 10px;
+  display: block;
+
+  ${breakpoint(
+    'medium',
+    `
+      display: inline;
+      margin-right: 10px;
+    `
+  )}
 `
 
 export default AppInstanceLabel

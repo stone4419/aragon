@@ -40,8 +40,8 @@ class BrowseByApp extends React.Component {
 
 const Apps = styled.div`
   display: grid;
-  grid-gap: 15px;
-  grid-template-columns: 1fr 1fr;
+  grid-gap: 10px;
+  grid-template-columns: minmax(150px, 1fr) minmax(150px, 1fr);
   margin: 0 30px;
 
   ${breakpoint(
