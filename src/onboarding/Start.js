@@ -151,7 +151,7 @@ class StartContent extends React.PureComponent {
       domainCheckStatus,
       onDomainChange,
       onOpenOrganization,
-      responsiveLanding,
+      smallMode,
     } = this.props
 
     const canCreate =
@@ -165,17 +165,19 @@ class StartContent extends React.PureComponent {
     return (
       <React.Fragment>
         <Title>
-          <Text size="great" weight="bold" color={theme.textDimmed}>
-            {responsiveLanding
-              ? 'Find an existing organization'
-              : 'Welcome to Aragon'}
+          <Text
+            size={smallMode ? 'xxlarge' : 'great'}
+            weight="bold"
+            color={theme.textDimmed}
+          >
+            {smallMode ? 'Find an existing organization' : 'Welcome to Aragon'}
           </Text>
         </Title>
 
         <NetworkChooser>
           <p>
             <Text size="large" color={theme.textSecondary}>
-              {responsiveLanding
+              {smallMode
                 ? 'Choose network'
                 : 'Start by choosing the network for your organization'}
             </Text>
@@ -186,11 +188,11 @@ class StartContent extends React.PureComponent {
               <DropDown
                 items={networkChooserItems.map(([id, label]) => label)}
                 onChange={this.handleNetworkChange}
-                wide={responsiveLanding}
+                wide={smallMode}
               />
             </div>
 
-            {!responsiveLanding && network.type === 'main' && (
+            {!smallMode && network.type === 'main' && (
               <Disclosure>
                 <span>
                   <IconAttention />
@@ -211,7 +213,7 @@ class StartContent extends React.PureComponent {
         </NetworkChooser>
 
         <TwoActions>
-          {!responsiveLanding && (
+          {!smallMode && (
             <Action>
               <p>
                 <Text size="large" color={theme.textSecondary}>
@@ -232,7 +234,7 @@ class StartContent extends React.PureComponent {
             <Action>
               <p>
                 <Text size="large" color={theme.textSecondary}>
-                  {responsiveLanding
+                  {smallMode
                     ? 'Enter an organization’s name'
                     : 'Or open an existing organization'}
                 </Text>
@@ -246,11 +248,12 @@ class StartContent extends React.PureComponent {
                     value={domain}
                     placeholder="Organization name"
                   />
-                  <div>
-                    <label htmlFor="onboard-start-domain">
-                      <Text weight="bold"> .aragonid.eth</Text>
-                    </label>
-                  </div>
+                  <label htmlFor="onboard-start-domain">
+                    <Text weight="bold" sie={smallMode ? 'large' : 'normal'}>
+                      {' '}
+                      .aragonid.eth
+                    </Text>
+                  </label>
                   <Status>
                     <CheckContainer
                       active={domainCheckStatus === DomainCheckAccepted}
@@ -277,17 +280,15 @@ class StartContent extends React.PureComponent {
                 <SubmitWrap>
                   {domainCheckStatus === DomainCheckAccepted && (
                     <StyledSubmitButton
-                      mode={responsiveLanding ? 'strong' : 'outline'}
-                      compact={!responsiveLanding}
+                      mode={smallMode ? 'strong' : 'outline'}
+                      compact={!smallMode}
                       onClick={onOpenOrganization}
                     >
-                      Open organization
+                      {smallMode ? 'Next' : 'Open organization'}
                     </StyledSubmitButton>
                   )}
                   {domainCheckStatus === DomainCheckRejected && (
-                    <DomainStatus
-                      size={responsiveLanding ? 'normal' : 'xsmall'}
-                    >
+                    <DomainStatus size={smallMode ? 'large' : 'xsmall'}>
                       No organization with that name exists.
                     </DomainStatus>
                   )}
@@ -383,7 +384,7 @@ class StartContent extends React.PureComponent {
 const ResponsiveStartContent = props => (
   <React.Fragment>
     <BreakPoint to="medium">
-      <StartContent {...props} responsiveLanding />
+      <StartContent {...props} smallMode />
     </BreakPoint>
     <BreakPoint from="medium">
       <StartContent {...props} />
@@ -393,7 +394,14 @@ const ResponsiveStartContent = props => (
 
 const DomainStatus = styled(Text)`
   display: block;
-  margin: -10px 0 0 5px;
+  margin-left: 5px;
+
+  ${breakpoint(
+    'medium',
+    `
+      margin: -10px 0 0 5px;
+    `
+  )}
 `
 
 const SubmitWrap = styled.span`
@@ -404,7 +412,6 @@ const SubmitWrap = styled.span`
     'medium',
     `
       display: inline;
-      text-align: unset;
     `
   )}
 `
@@ -424,6 +431,7 @@ const Warning = styled.div`
   background: rgba(255, 195, 70, 0.09);
   border-radius: 3px;
   padding: 13px;
+  margin: 0 auto;
   margin-bottom: 45px;
   font-size: 15px;
 
@@ -580,26 +588,23 @@ const OpenOrganization = styled.div`
 
 const StyledTextInput = styled(TextInput)`
   width: 100%;
-  grid-column: 1 / -1;
+  margin-bottom: 10px;
 
   ${breakpoint(
     'medium',
     `
       text-align: right;
+      margin-bottom: 0;
     `
   )}
 `
 
 const Field = styled.div`
-  display: grid;
-  grid-template-rows: 1fr 1fr;
-  grid-template-columns: auto 1fr;
-  row-gap: 10px;
   margin-bottom: 20px;
 
   label {
-    display: block;
-    margin-left: 8px;
+    display: inline-block;
+    margin: 0 4px 0 8px;
   }
 
   ${breakpoint(
